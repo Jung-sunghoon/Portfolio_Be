@@ -5,11 +5,12 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const bodyParser = require("body-parser");
+const router = require("./router");
+
+require("dotenv").config();
 
 const app = express();
-
-const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
 
 // mariaDB connect
 const maria = require("./database/connect/maria");
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(bodyParser.json());
 
 // Swagger JSDoc 설정
 const swaggerOptions = {
@@ -38,15 +40,20 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ["./routes/apis/**/*.js"], // Swagger 문서 파일 경로
+  apis: ["./routes/apis/*.controller.js"], // Swagger 문서 파일 경로
 };
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Swagger UI 설정
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, { explorer: true })
+);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+// 라우터 설정
+app.use(router);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -59,9 +66,13 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+  // send JSON response for API requests
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message,
+      stack: req.app.get("env") === "development" ? err.stack : undefined,
+    },
+  });
 });
 
 module.exports = app;
