@@ -46,6 +46,7 @@ const maria = require("../../database/connect/maria");
  *             example:
  *               message: "주어진 post_id에 해당하는 게시물을 찾을 수 없습니다."
  */
+
 router.get("/:post_id", async (req, res) => {
   const { post_id } = req.params;
 
@@ -54,9 +55,12 @@ router.get("/:post_id", async (req, res) => {
     // Mariadb 연결
     conn = await maria.getConnection();
 
-    // 블로그 게시물 디테일 조회
-    const result = await conn.query(
-      "SELECT * FROM BlogPost WHERE post_id = ?",
+    // 트랜잭션 시작
+    await conn.beginTransaction();
+
+    // 블로그 게시물 조회 및 조회수 증가
+    const [result] = await conn.query(
+      "SELECT * FROM BlogPost WHERE post_id = ? FOR UPDATE",
       [post_id]
     );
 
@@ -71,9 +75,18 @@ router.get("/:post_id", async (req, res) => {
         post_id: Number(result[0].post_id),
         title: result[0].title,
         content: result[0].content,
-        views: Number(result[0].views),
+        views: Number(result[0].views) + 1, // 조회수 1 증가
         creation_date: result[0].creation_date,
       };
+
+      // 조회수 업데이트
+      await conn.query(
+        "UPDATE BlogPost SET views = views + 1 WHERE post_id = ?",
+        [post_id]
+      );
+
+      // 트랜잭션 커밋
+      await conn.commit();
 
       res.status(200).json({
         message: "블로그 게시물 디테일 페이지를 성공적으로 가져왔습니다.",
@@ -81,6 +94,11 @@ router.get("/:post_id", async (req, res) => {
       });
     }
   } catch (error) {
+    // 트랜잭션 롤백
+    if (conn) {
+      await conn.rollback();
+    }
+
     console.error("Error fetching blog post detail:", error);
     res.status(500).json({
       message: "블로그 게시물 디테일 페이지 조회에 실패했습니다.",

@@ -24,7 +24,6 @@ const maria = require("../../database/connect/maria");
  *         content:
  *           application/json:
  *             example:
- *               message: "블로그 게시물 목록을 성공적으로 조회했습니다."
  *               blogPosts:
  *                 - post_id: 1
  *                   title: "첫 번째 게시물"
@@ -48,7 +47,6 @@ router.get("/list", async (req, res) => {
     }));
 
     res.status(200).json({
-      message: "블로그 게시물 목록을 성공적으로 조회했습니다.",
       blogPosts,
     });
   } catch (error) {

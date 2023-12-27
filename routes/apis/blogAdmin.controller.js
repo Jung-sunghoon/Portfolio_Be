@@ -30,7 +30,6 @@ const maria = require("../../database/connect/maria");
  *         content:
  *           application/json:
  *             example:
- *               message: "블로그 게시물을 성공적으로 생성 또는 수정했습니다."
  *               blogPost: { post_id: 3, title: "새로운 게시물", content: "이것은 새로운 게시물입니다." }
  */
 router.post("/create", async (req, res) => {
@@ -105,7 +104,6 @@ router.post("/create", async (req, res) => {
  *         content:
  *           application/json:
  *             example:
- *               message: "블로그 게시물을 성공적으로 삭제했습니다."
  *               deletedPost: { post_id: 3, title: "삭제된 게시물", content: "이것은 삭제된 게시물입니다." }
  *       404:
  *         description: 주어진 post_id에 해당하는 게시물을 찾을 수 없음
