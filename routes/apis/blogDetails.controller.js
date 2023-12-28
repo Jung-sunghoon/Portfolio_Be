@@ -59,7 +59,7 @@ router.get("/:post_id", async (req, res) => {
     await conn.beginTransaction();
 
     // 블로그 게시물 조회 및 조회수 증가
-    const [result] = await conn.query(
+    const result = await conn.query(
       "SELECT * FROM BlogPost WHERE post_id = ? FOR UPDATE",
       [post_id]
     );
@@ -71,6 +71,7 @@ router.get("/:post_id", async (req, res) => {
       });
     } else {
       // 해당 post_id에 해당하는 게시물이 있는 경우
+      console.log("result", result);
       const blogPostDetail = {
         post_id: Number(result[0].post_id),
         title: result[0].title,
