@@ -7,6 +7,8 @@ const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const bodyParser = require("body-parser");
 const router = require("./router");
+const session = require("express-session");
+const passport = require("./oauth"); // oauth.js 파일을 불러옴
 
 require("dotenv").config();
 

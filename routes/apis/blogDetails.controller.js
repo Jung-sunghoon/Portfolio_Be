@@ -71,7 +71,6 @@ router.get("/:post_id", async (req, res) => {
       });
     } else {
       // 해당 post_id에 해당하는 게시물이 있는 경우
-      console.log("result", result);
       const blogPostDetail = {
         post_id: Number(result[0].post_id),
         title: result[0].title,
