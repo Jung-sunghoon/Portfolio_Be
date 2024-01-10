@@ -61,8 +61,27 @@ app.use(
 );
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// 세션 설정
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+// Passport 초기화 및 세션 사용 설정
+app.use(passport.initialize());
+app.use(passport.session());
+
 // 라우터 설정
 app.use(router);
+
+app.get("/logout", (req, res) => {
+  // 세션 제거 또는 토큰 만료 등의 로직을 수행
+  req.logout(); // 예시: Passport를 사용하는 경우
+  res.redirect("/"); // 로그아웃 후 리다이렉션할 경로
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
