@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const maria = require("../../database/connect/maria");
+const bodyParser = require("body-parser");
 
 /**
  * Blog Post Schema
@@ -32,6 +33,7 @@ const maria = require("../../database/connect/maria");
  *             example:
  *               blogPost: { post_id: 3, title: "새로운 게시물", content: "이것은 새로운 게시물입니다." }
  */
+
 router.post("/create", async (req, res) => {
   const { title, content, post_id } = req.body;
 
@@ -40,7 +42,7 @@ router.post("/create", async (req, res) => {
     // Mariadb 연결
     conn = await maria.getConnection();
 
-    if (post_id !== undefined) {
+    if (post_id) {
       // post_id가 주어진 경우, 게시물 수정
       await conn.query(
         "UPDATE BlogPost SET title = ?, content = ? WHERE post_id = ?",
@@ -126,7 +128,6 @@ router.delete("/delete/:post_id", async (req, res) => {
       "SELECT * FROM BlogPost WHERE post_id = ?",
       [post_id]
     );
-    console.log("deletedPost3", deletedPost);
     if (!deletedPost.length) {
       // 주어진 post_id에 해당하는 게시물이 없는 경우
       res.status(404).json({

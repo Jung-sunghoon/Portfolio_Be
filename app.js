@@ -21,6 +21,15 @@ const maria = require("./database/connect/maria");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
+app.use(bodyParser.json({ limit: 5000000 })); // 5MB
+app.use(
+  bodyParser.urlencoded({
+    limit: 5000000,
+    extended: true,
+    parameterLimit: 50000,
+  })
+); // limit: 5MB
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
