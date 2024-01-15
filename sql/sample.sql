@@ -23,7 +23,7 @@ CREATE TABLE User (
   username VARCHAR(255) NOT NULL
 );
 
-INSERT INTO USER ( email, username) VALUES ('jsh021813@gmail.com', '정성훈');
+INSERT INTO User ( email, username) VALUES ('jsh021813@gmail.com', '정성훈');
 
 INSERT INTO BlogPost ( title, content) VALUES ('테스트용 게시물 1', '안녕하세요 블로그 게시물 1번입니다.');
 INSERT INTO BlogPost ( title, content) VALUES ('테스트용 게시물 2', '안녕하세요 블로그 게시물 2번입니다.');
