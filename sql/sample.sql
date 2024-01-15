@@ -10,8 +10,8 @@ CREATE TABLE BlogPost (
 CREATE TABLE CalendarEvent ( 
   event_id INT AUTO_INCREMENT PRIMARY KEY, 
   event_title VARCHAR(255) NOT NULL, 
-  start_time DATETIME2 NOT NULL, 
-  end_time DATETIME2 NOT NULL, 
+  start_time DATETIME NOT NULL, 
+  end_time DATETIME NOT NULL, 
   event_text LONGTEXT, 
   event_type varchar(255) NOT NULL,
   creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
