@@ -70,7 +70,7 @@ async function getUserFromDBByEmail(email) {
   try {
     conn = await maria.getConnection();
     const [rows, Fields] = await conn.query(
-      "SELECT * From user WHERE email = ?",
+      "SELECT * From User WHERE email = ?",
       [email]
     );
     return rows;
