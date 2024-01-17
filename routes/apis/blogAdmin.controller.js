@@ -10,7 +10,6 @@ const bodyParser = require("body-parser");
  * @property {string} content - 블로그 게시물의 내용
  */
 
-//
 /**
  * @swagger
  * /api/blog-admin/create:

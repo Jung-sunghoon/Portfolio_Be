@@ -8,13 +8,46 @@ const bodyParser = require("body-parser");
  * @typedef {object} CalendarEvent
  * @property {string} event_id - 이벤트의 ID
  * @property {string} event_title - 이벤트의 제목
- * @property {string} start_time - 시작 시간
- * @property {string} end_time - 종료 시간
+ * @property {string} event_date - 이벤트 날짜
  * @property {string} event_text - 이벤트 내용
  * @property {string} event_type - 이벤트 타입
  */
 
-//
+/**
+ * 시작 시간과 종료 시간을 "yyyy-mm-dd" 형식으로 변환
+ * @param {string} datetime - ISO 8601 date-time 형식의 문자열
+ * @returns {string} - "yyyy-mm-dd" 형식의 문자열
+ */
+const formatTime = (datetime) => {
+  const date = new Date(datetime);
+  const formattedDate = date.toISOString().split("T")[0]; // "yyyy-mm-dd"
+  return formattedDate;
+};
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     CalendarEvent:
+ *       type: object
+ *       properties:
+ *         event_id:
+ *           type: number
+ *           description: 이벤트의 ID
+ *         event_title:
+ *           type: string
+ *           description: 이벤트의 제목
+ *         event_date:
+ *           type: string
+ *           description: 이벤트 날짜 (yyyy-mm-dd 00:00 형식)
+ *         event_text:
+ *           type: string
+ *           description: 이벤트 내용
+ *         event_type:
+ *           type: string
+ *           description: 이벤트 타입
+ */
+
 /**
  * @swagger
  * /api/calendar-admin/create:
@@ -24,16 +57,70 @@ const bodyParser = require("body-parser");
  *     requestBody:
  *       required: true
  *       content:
- *         application/json
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - event_id
+ *               - event_title
+ *               - event_date
+ *               - event_type
+ *               - event_text
+ *             properties:
+ *               event_id:
+ *                 type: number
+ *                 description: 이벤트의 ID
+ *               event_title:
+ *                 type: string
+ *                 description: 이벤트의 제목
+ *               event_date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: 이벤트 날짜 (ISO 8601 date-time 형식)
+ *               event_type:
+ *                 type: string
+ *                 description: 이벤트 타입
+ *               event_text:
+ *                 type: string
+ *                 description: 이벤트 내용
  *     responses:
  *       201:
  *         description: 성공적으로 달력 이벤트를 생성 또는 수정함
  *         content:
- *           application/json
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: 응답 메시지
+ *                 CalendarEvent:
+ *                   $ref: '#/components/schemas/CalendarEvent'
+ *       400:
+ *         description: 잘못된 요청 형식
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: 에러 메시지
+ *       500:
+ *         description: 서버 에러
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: 에러 메시지
  */
 
 router.post("/create", async (req, res) => {
-  const { event_title, start_time, end_time, event_type } = req.body;
+  const { event_id, event_title, event_date, event_type, event_text } =
+    req.body;
 
   let conn;
   try {
@@ -41,10 +128,10 @@ router.post("/create", async (req, res) => {
     conn = await maria.getConnection();
 
     if (event_id) {
-      // post_id가 주어진 경우, 게시물 수정
+      // event_id가 주어진 경우, 게시물 수정
       await conn.query(
-        "UPDATE CalendarEvent SET event_title = ?, start_time = ?, end_time = ?, event_type = ? WHERE event_id = ?",
-        [event_title, start_time, end_time, event_type]
+        "UPDATE CalendarEvent SET event_title = ?, event_date = ?, event_type = ?, event_text = ? WHERE event_id = ?",
+        [event_title, formatTime(event_date), event_type, event_text, event_id]
       );
 
       res.status(200).json({
@@ -52,24 +139,23 @@ router.post("/create", async (req, res) => {
         CalendarEvent: {
           event_id,
           event_title,
-          start_time,
-          end_time,
+          event_date: formatTime(event_date),
           event_type,
+          event_text,
         },
       });
     } else {
       // event_id가 주어지지 않은 경우, 새로운 게시물 생성
       const result = await conn.query(
-        "INSERT INTO CalendarEvent (event_title, start_time, end_time, event_type) VALUES (?, ?, ?, ?)",
-        [event_title, start_time, end_time, event_type]
+        "INSERT INTO CalendarEvent (event_title, event_date, event_type, event_text) VALUES (?, ?, ?, ?)",
+        [event_title, formatTime(event_date), event_type, event_text]
       );
 
       const newEvent = {
-        event_id: Number(result.insertId),
         event_title,
-        start_time,
-        end_time,
+        event_date: formatTime(event_date),
         event_type,
+        event_text,
       };
 
       res.status(201).json({
@@ -110,11 +196,15 @@ router.post("/create", async (req, res) => {
  *       200:
  *         description: 성공적으로 이벤트를 삭제함
  *         content:
- *           application/json
+ *           application/json:
+ *              example:
+ *               이벤트가 삭제되었습니다.
  *       404:
  *         description: 주어진 event_id에 해당하는 이벤트를 찾을 수 없음
  *         content:
- *           application/json
+ *           application/json:
+ *            example:
+ *               이벤트를 찾을 수 없습니다.
  */
 
 router.delete("/delete/:event_id", async (req, res) => {
