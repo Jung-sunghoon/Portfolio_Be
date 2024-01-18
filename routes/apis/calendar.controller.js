@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const maria = require("../../database/connect/maria");
+const dayjs = require("dayjs");
 
 /**
  * Blog Post Schema
@@ -19,8 +20,8 @@ const maria = require("../../database/connect/maria");
  * @returns {string} - "yyyy-mm-dd" 형식의 문자열
  */
 const formatTime = (datetime) => {
-  const date = new Date(datetime);
-  const formattedDate = date.toISOString().split("T")[0]; // "yyyy-mm-dd"
+  const date = new dayjs(datetime);
+  const formattedDate = date.format("YYYY-MM-DD"); // "yyyy-mm-dd"
   return formattedDate;
 };
 
