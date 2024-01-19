@@ -254,10 +254,11 @@ router.delete("/delete/:event_id", async (req, res) => {
 
 /**
  * @swagger
- * /update:
+ * /api/calendar-admin/update:
  *   put:
  *     summary: 이벤트 업데이트
  *     description: 지정된 세부 정보로 기존 이벤트를 업데이트합니다.
+ *     tags: [Calendar Admin]
  *     requestBody:
  *       description: 업데이트할 이벤트 세부 정보
  *       required: true
