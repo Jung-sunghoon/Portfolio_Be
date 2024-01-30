@@ -10,6 +10,7 @@ const maria = require("../../database/connect/maria");
  * @property {string} title - 블로그 게시물의 제목
  * @property {string} creation_date - 블로그 게시물 작성 날짜
  * @property {number} views - 블로그 게시물 조회수
+ * @property {string} thumbnail - 블로그 게시물 썸네일
  */
 
 /**
@@ -44,6 +45,7 @@ router.get("/list", async (req, res) => {
       title: row.title,
       views: Number(row.views),
       creation_date: row.creation_date,
+      thumbnail: row.thumbnail,
     }));
 
     res.status(200).json({

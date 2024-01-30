@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
  * @typedef {object} BlogPost
  * @property {string} title - 블로그 게시물의 제목
  * @property {string} content - 블로그 게시물의 내용
+ * @property {any} thumbnail - 블로그 게시물 썸네일
  */
 
 /**
@@ -24,17 +25,18 @@ const bodyParser = require("body-parser");
  *             title: "새로운 게시물"
  *             content: "이것은 새로운 게시물입니다."
  *             post_id: 3
+ *             thumbnail: "썸네일"
  *     responses:
  *       201:
  *         description: 성공적으로 블로그 게시물을 생성 또는 수정함
  *         content:
  *           application/json:
  *             example:
- *               blogPost: { post_id: 3, title: "새로운 게시물", content: "이것은 새로운 게시물입니다." }
+ *               blogPost: { post_id: 3, title: "새로운 게시물", content: "이것은 새로운 게시물입니다." ,thumbnail: "썸네일" }
  */
 
 router.post("/create", async (req, res) => {
-  const { title, content, post_id } = req.body;
+  const { title, content, post_id, thumbnail } = req.body;
 
   let conn;
   try {
@@ -44,31 +46,33 @@ router.post("/create", async (req, res) => {
     if (post_id) {
       // post_id가 주어진 경우, 게시물 수정
       await conn.query(
-        "UPDATE BlogPost SET title = ?, content = ? WHERE post_id = ?",
-        [title, content, post_id]
+        "UPDATE BlogPost SET title = ?, content = ? , thumbnail = ? WHERE post_id = ?",
+        [title, content, thumbnail, post_id]
       );
 
       res.status(200).json({
         message: "블로그 게시물을 성공적으로 수정했습니다.",
-        blogPost: { post_id, title, content },
+        blogPost: { post_id, title, content, thumbnail },
       });
     } else {
       // post_id가 주어지지 않은 경우, 새로운 게시물 생성
       const result = await conn.query(
-        "INSERT INTO BlogPost (title, content) VALUES (?, ?)",
-        [title, content]
+        "INSERT INTO BlogPost (title, content, thumbnail) VALUES (?, ?, ?)",
+        [title, content, thumbnail]
       );
 
       const newPost = {
         post_id: Number(result.insertId),
         title,
         content,
+        thumbnail,
       };
 
       res.status(201).json({
         message: "블로그 게시물을 성공적으로 생성했습니다.",
         blogPost: newPost,
       });
+      console.log(newPost, "newPost");
     }
   } catch (error) {
     console.error("Error creating or updating blog post:", error);
@@ -105,7 +109,7 @@ router.post("/create", async (req, res) => {
  *         content:
  *           application/json:
  *             example:
- *               deletedPost: { post_id: 3, title: "삭제된 게시물", content: "이것은 삭제된 게시물입니다." }
+ *               deletedPost: { post_id: 3, title: "삭제된 게시물", content: "이것은 삭제된 게시물입니다.", thumbnail: "썸네일" }
  *       404:
  *         description: 주어진 post_id에 해당하는 게시물을 찾을 수 없음
  *         content:

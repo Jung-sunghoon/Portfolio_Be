@@ -11,6 +11,8 @@ const maria = require("../../database/connect/maria");
  * @property {string} content - 블로그 게시물의 내용
  * @property {string} creation_date - 블로그 게시물 작성 날짜
  * @property {number} views - 블로그 게시물 조회수
+ * @property {any} thumbnail - 블로그 게시물 썸네일
+ *
  */
 
 /**
@@ -77,6 +79,7 @@ router.get("/:post_id", async (req, res) => {
         content: result[0].content,
         views: Number(result[0].views) + 1, // 조회수 1 증가
         creation_date: result[0].creation_date,
+        thumbnail: result[0].thumbnail,
       };
 
       // 조회수 업데이트
