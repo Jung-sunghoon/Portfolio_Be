@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Headers", "*");
   next();
 });
 
@@ -54,7 +54,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000", // 요청 URL
+        url: "/", // 요청 URL
       },
     ],
   },

@@ -3,6 +3,7 @@ const router = express.Router();
 const maria = require("../../database/connect/maria");
 const bodyParser = require("body-parser");
 const dayjs = require("dayjs");
+const checkAuthToken = require("../../swaggerSec");
 
 /**
  * Blog Post Schema
@@ -119,7 +120,7 @@ const formatTime = (datetime) => {
  *                   description: 에러 메시지
  */
 
-router.post("/create", async (req, res) => {
+router.post("/create", checkAuthToken, async (req, res) => {
   const { event_id, event_title, event_date, event_type, event_text } =
     req.body;
 
@@ -208,7 +209,7 @@ router.post("/create", async (req, res) => {
  *               이벤트를 찾을 수 없습니다.
  */
 
-router.delete("/delete/:event_id", async (req, res) => {
+router.delete("/delete/:event_id", checkAuthToken, async (req, res) => {
   const { event_id } = req.params;
 
   let conn;
@@ -310,7 +311,7 @@ router.delete("/delete/:event_id", async (req, res) => {
  *               message: 이벤트를 찾을 수 없습니다.
  */
 
-router.put("/update/:event_id", async (req, res) => {
+router.put("/update/:event_id", checkAuthToken, async (req, res) => {
   const { event_id, event_title, event_date, event_type, event_text } =
     req.body;
 

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const maria = require("../../database/connect/maria");
 const bodyParser = require("body-parser");
+const checkAuthToken = require("../../swaggerSec");
 
 /**
  * Blog Post Schema
@@ -35,7 +36,7 @@ const bodyParser = require("body-parser");
  *               blogPost: { post_id: 3, title: "새로운 게시물", content: "이것은 새로운 게시물입니다." ,thumbnail: "썸네일" }
  */
 
-router.post("/create", async (req, res) => {
+router.post("/create", checkAuthToken, async (req, res) => {
   const { title, content, post_id, thumbnail } = req.body;
 
   let conn;
@@ -118,7 +119,7 @@ router.post("/create", async (req, res) => {
  *               message: "주어진 post_id에 해당하는 게시물을 찾을 수 없습니다."
  */
 
-router.delete("/delete/:post_id", async (req, res) => {
+router.delete("/delete/:post_id", checkAuthToken, async (req, res) => {
   const { post_id } = req.params;
 
   let conn;
