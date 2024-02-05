@@ -57,6 +57,28 @@ const swaggerOptions = {
         url: "/", // 요청 URL
       },
     ],
+    schemes: ["http"],
+    securityDefinitions: {
+      bearerAuth: {
+        type: "apiKey",
+        name: "Authorization",
+        in: "header",
+      },
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "apiKey",
+          name: "Authorization",
+          in: "header",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: ["./routes/apis/*.controller.js"], // Swagger 문서 파일 경로
 };

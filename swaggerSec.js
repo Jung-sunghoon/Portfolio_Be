@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const checkAuthToken = (req, res, next) => {
   // 헤더에서 Bearer 토큰을 추출
-  const authHeader = req.headers.Authorization;
+  const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
   console.log(authHeader, "authHeader");
 
@@ -11,7 +11,7 @@ const checkAuthToken = (req, res, next) => {
   }
 
   // 토큰을 검증
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
     if (err) {
       return res
         .status(403)
